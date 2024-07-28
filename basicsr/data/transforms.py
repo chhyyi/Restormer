@@ -271,5 +271,5 @@ def random_augmentation(*args):
     out = []
     flag_aug = random.randint(0,7)
     for data in args:
-        out.append(data_augmentation(data, flag_aug).copy())
+        out.append(np.copy(data_augmentation(data, flag_aug)))
     return out

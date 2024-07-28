@@ -291,6 +291,7 @@ class ImageCleanModel(BaseModel):
             for metric in self.metric_results.keys():
                 self.metric_results[metric] /= cnt
                 current_metric = self.metric_results[metric]
+                print(f"{metric} for {cnt} validation data (averaged)")
 
             self._log_validation_metric_values(current_iter, dataset_name,
                                                tb_logger)
