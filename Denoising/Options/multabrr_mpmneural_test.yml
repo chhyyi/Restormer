@@ -1,5 +1,5 @@
 # general settings
-name: 4221_worker4-1
+name: 8844_worker1
 model_type: ImageCleanModel
 scale: 1
 num_gpu: 1  # set num_gpu: 0 for cpu mode
@@ -10,8 +10,8 @@ datasets:
   train:
     name: TrainSet
     type: Dataset_MultAbrr
-    dataroot_gt: ../shared/4221/train/gt
-    dataroot_lq: ../shared/4221/train/abrr
+    dataroot_gt: ../shared/8844/train/gt
+    dataroot_lq: ../shared/8844/train/abrr
     geometric_augs: true
 
     filename_tmpl: '{}'
@@ -48,12 +48,14 @@ datasets:
     abrr_imgs_number: 10
     dataset_mode: fixed
     gt_size: 384
+    geometric_augs: true
+
 
   val:
     name: ValSet
     type: Dataset_MultAbrr
-    dataroot_gt: ../shared/4221/test/gt
-    dataroot_lq: ../shared/4221/test/abrr
+    dataroot_gt: ../shared/8844/test/gt
+    dataroot_lq: ../shared/8844/test/abrr
     io_backend:
       type: disk
     
@@ -63,7 +65,8 @@ datasets:
     max_length: 5000
     abrr_imgs_number: 10
     dataset_mode: fixed
-    gt_size: 384
+    gt_size: 600
+    geometric_augs: false
 
 # network structures
 network_g:
@@ -84,7 +87,7 @@ network_g:
 path:
   pretrain_network_g: ~
   strict_load_g: true
-  resume_state: experiments/4221_worker4-1/training_states/4000.state
+  resume_state: experiments/8844_worker1/training_states/52000.state
 
 # training settings
 train:
@@ -122,7 +125,7 @@ train:
 val:
   window_size: 8
   val_freq: !!float 4e3
-  save_img: false
+  save_img: true
   rgb2bgr: false
   use_image: false
   max_minibatch: 8
@@ -138,6 +141,10 @@ val:
       crop_border: 0
       test_y_channel: false
 
+    mse:
+      type: l2loss
+      crop_border: 0
+      test_y_channel: false
 # logging settings
 logger:
   print_freq: 1000

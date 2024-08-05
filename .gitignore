@@ -13,6 +13,9 @@ shared/
 */vscode
 experiments/
 nohup.out
+tb_logger/
+results/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

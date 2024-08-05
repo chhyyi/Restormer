@@ -15,6 +15,7 @@ import time
 import torch
 from os import path as osp
 
+
 import sys
 sys.path.append("/root/project/restormer")
 
@@ -25,7 +26,7 @@ from basicsr.models import create_model
 from basicsr.utils import (MessageLogger, check_resume, get_env_info,
                            get_root_logger, get_time_str, init_tb_logger,
                            init_wandb_logger, make_exp_dirs, mkdir_and_rename,
-                           set_random_seed)
+                           set_random_seed, imwrite)
 from basicsr.utils.dist_util import get_dist_info, init_dist
 from basicsr.utils.options import dict2str, parse
 
@@ -137,6 +138,26 @@ def create_train_val_dataloader(opt, logger):
 
     return train_loader, train_sampler, val_loader, total_epochs, total_iters
 
+def copy_input_abrr2vis():
+    from pathlib import Path
+    import tifffile as tif
+    opt = parse_options(is_train=True)
+
+    """move input abrr imgs to visualizations directory"""
+    save_img_path = Path(opt['path']['visualization'])
+    for vis_subdir in save_img_path.iterdir():
+        assert vis_subdir.is_dir()
+        abrr_input_name = vis_subdir.stem
+        abrr_img_pth = Path(opt['datasets']['val']['dataroot_lq']).joinpath(f'{abrr_input_name}.tif')
+        abrr_img = tif.imread(abrr_img_pth)
+        abrr_img = abrr_img.astype(np.float64)
+        
+        abrr_img_raw = (abrr_img).round().astype(np.uint8)
+        imwrite(abrr_img_raw, str(vis_subdir.joinpath(f"{abrr_input_name}_raw_input.png")))
+        
+        abrr_img_linnorm = (abrr_img-abrr_img.min())/(abrr_img.max()-abrr_img.min())
+        abrr_img_linnorm = (abrr_img_linnorm*255.).round().astype(np.uint8)
+        imwrite(abrr_img_linnorm, str(vis_subdir.joinpath(f"{abrr_input_name}_linnorm_input.png")))
 
 def main():
     # parse options, set distributed setting, set ramdom seed
@@ -250,3 +271,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    copy_input_abrr2vis()

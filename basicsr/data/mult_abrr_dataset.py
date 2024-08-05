@@ -68,11 +68,14 @@ class Dataset_MultAbrr(AberratedDataset):
                                             f"gt of abrr image, {input_ls}")
 
         # flip, rotation augmentations
-        img_gt, img_lq = random_augmentation(img_gt, img_lq) #it takse images in [W, H, C] channel order.
-        img_gt = torch.from_numpy(img_gt)
+        if self.opt["geometric_augs"]:
+            img_gt, img_lq = random_augmentation(img_gt, img_lq) #it takse images in [W, H, C] channel order.
+            img_gt = torch.from_numpy(img_gt)
+            img_lq = torch.from_numpy(img_lq)
+            
         img_gt = img_gt.moveaxis(2, 0)
-        img_lq = torch.from_numpy(img_lq)
         img_lq = img_lq.moveaxis(2, 0)
+    
         # augmentation for training 
         if False: #skip padding because dataset is
             gt_size = self.opt['gt_size']

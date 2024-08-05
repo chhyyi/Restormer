@@ -1,5 +1,5 @@
 # general settings
-name: 8442_worker1
+name: 8844_worker1
 model_type: ImageCleanModel
 scale: 1
 num_gpu: 1  # set num_gpu: 0 for cpu mode
@@ -10,8 +10,8 @@ datasets:
   train:
     name: TrainSet
     type: Dataset_MultAbrr
-    dataroot_gt: ../shared/8442/train/gt
-    dataroot_lq: ../shared/8442/train/abrr
+    dataroot_gt: ../shared/8844/train/gt
+    dataroot_lq: ../shared/8844/train/abrr
     geometric_augs: true
 
     filename_tmpl: '{}'
@@ -28,7 +28,7 @@ datasets:
     mini_batch_sizes: [8,5,4,2,1,1]             # Batch size per gpu   
     iters: [92000,64000,48000,36000,36000,24000]
     gt_size: 348   # Max patch size for progressive training
-    gt_sizes: [128,160,192,256,320,348]  # Patch sizes for progressive training.
+    gt_sizes: [128,160,192,256,320,344]  # Patch sizes for progressive training.
     ### ------------------------------------------------------------
 
     ### ------- Training on single fixed-patch size 128x128---------
@@ -48,12 +48,14 @@ datasets:
     abrr_imgs_number: 10
     dataset_mode: fixed
     gt_size: 384
+    geometric_augs: true
+
 
   val:
     name: ValSet
     type: Dataset_MultAbrr
-    dataroot_gt: ../shared/8442/test/gt
-    dataroot_lq: ../shared/8442/test/abrr
+    dataroot_gt: ../shared/8844/test/gt
+    dataroot_lq: ../shared/8844/test/abrr
     io_backend:
       type: disk
     
@@ -64,6 +66,8 @@ datasets:
     abrr_imgs_number: 10
     dataset_mode: fixed
     gt_size: 384
+    geometric_augs: false
+
 
 # network structures
 network_g:
