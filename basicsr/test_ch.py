@@ -31,6 +31,9 @@ from basicsr.utils.dist_util import get_dist_info, init_dist
 from basicsr.utils.options import dict2str, parse
 
 import numpy as np
+from pathlib import Path
+import matplotlib.pyplot as plt
+import tifffile as tif
 
 def parse_options(is_train=True):
     parser = argparse.ArgumentParser()
@@ -139,11 +142,10 @@ def create_train_val_dataloader(opt, logger):
     return train_loader, train_sampler, val_loader, total_epochs, total_iters
 
 def copy_input_abrr2vis():
-    from pathlib import Path
-    import tifffile as tif
+    """move input abrr imgs to visualizations directory"""
+
     opt = parse_options(is_train=True)
 
-    """move input abrr imgs to visualizations directory"""
     save_img_path = Path(opt['path']['visualization'])
     for vis_subdir in save_img_path.iterdir():
         assert vis_subdir.is_dir()
@@ -268,7 +270,67 @@ def main():
     if tb_logger:
         tb_logger.close()
 
+def save_vis_comparison(exp_path=None, num_iter = 300000, output_pth = "vis_outputs"):
+    """
+    glob prediction results(default: *_300000.png) on the experiments dir, save figure with gt, raw_input. linearly normalized (min-max).
+    """
+    opt = parse_options(is_train=True)
+    exp_path = Path(opt['path']['resume_state']).parent.parent
+    pth = Path(exp_path)
+
+    plt.rcParams['font.size']=18
+    output_pth = pth.joinpath(output_pth)
+    output_pth.mkdir(exist_ok=True)
+
+    mse_list = []
+
+    vis_dirs = [i for i in pth.glob("**/visualization")]
+    for vis_dir in vis_dirs: # 1 visualization dirs per 1 experiment...
+        for per_patch in vis_dir.iterdir():
+            last_pth = per_patch.joinpath(f"{per_patch.stem}_{num_iter}.png")
+            if not last_pth.is_file():            
+                last_idx = 300000
+                raise FileNotFoundError(f"per_patc")
+            last = plt.imread(last_pth)
+            gt_pth = per_patch.joinpath(f"{last_pth.stem}_gt.png")
+            gt = plt.imread(gt_pth)
+            linnorm_input_pth = per_patch.joinpath(f"{per_patch.stem}_linnorm_input.png")
+            linnorm_input = plt.imread(linnorm_input_pth)
+            raw_input_pth = per_patch.joinpath(f"{per_patch.stem}_raw_input.png")
+            raw_input = plt.imread(raw_input_pth)
+
+            f, axs = plt.subplots(ncols = 4, nrows = 1, figsize=(30, 8.5))
+            f.subplots_adjust(left=0.05)
+            cbar_ax = f.add_axes([0.93, 0.15, 0.01, 0.7])
+
+            f.suptitle(f"{vis_dir.parent.stem}/{per_patch.stem}, iter {num_iter}")
+            #f.tight_layout()
+            im = axs[0].imshow(raw_input, cmap="cividis", vmin=0, vmax=1)
+            #f.colorbar(im, ax=axs[0], shrink=0.8)
+            axs[0].axis("off")
+            axs[0].set_title("Raw Input")
+            im = axs[1].imshow(linnorm_input, cmap="cividis", vmin=0, vmax=1)
+            #f.colorbar(im, ax=axs[1], shrink=0.8)
+            axs[1].axis("off")
+            axs[1].set_title("Normalized Input")
+            im = axs[2].imshow(last, cmap="cividis", vmin=0, vmax=1)
+            #f.colorbar(im, ax=axs[2], shrink=0.8)
+
+            mse = torch.mean((torch.Tensor(gt) -torch.Tensor(last))**2)
+            mse_list.append(mse)
+            axs[2].axis("off")
+            axs[2].set_title(f"prediction, mse:{mse:.06}")
+            im = axs[3].imshow(gt, cmap="cividis", vmin=0, vmax=1)
+            #f.colorbar(im, ax=axs[3], shrink=0.8)
+            f.colorbar(im, cax=cbar_ax)
+            axs[3].axis("off")
+            axs[3].set_title("GT")
+            plt.savefig(output_pth.joinpath(f"{vis_dir.parent.stem}_{per_patch.stem}.png"))
+            plt.close()
+
+    print(f"mse over whole validation set:{torch.mean(torch.tensor(mse_list))}")
 
 if __name__ == '__main__':
     main()
     copy_input_abrr2vis()
+    save_vis_comparison(exp_path="/root/project/restormer/experiments", num_iter = 300000,output_pth = "vis_outputs")

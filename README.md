@@ -15,5 +15,5 @@ See original [README.md](https://github.com/swz30/Restormer/blob/main/README.md)
 
 ```bash
 python basicsr\train.py -opt Denoising\Options\multabrr_mpmneural.yml # for train
-python basicsr\test_ch.py -opt Denoising\Options\multabrr_mpmneural_test.yml # for test
+python basicsr\test_ch.py -opt Denoising\Options\multabrr_mpmneural_test.yml # for test. should modify config file to pass desired 'resume state'
 ```

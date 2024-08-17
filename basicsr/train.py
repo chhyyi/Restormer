@@ -158,7 +158,7 @@ def main():
             opt['path']['resume_state'],
             map_location=lambda storage, loc: storage.cuda(device_id))
     else:
-        resume_state = None
+        resume_state = None 
 
     # mkdir for experiments and logger
     if resume_state is None:

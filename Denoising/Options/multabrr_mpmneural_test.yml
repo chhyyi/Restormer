@@ -1,5 +1,5 @@
 # general settings
-name: 8844_worker1
+name: 4422_AUGabrrs
 model_type: ImageCleanModel
 scale: 1
 num_gpu: 1  # set num_gpu: 0 for cpu mode
@@ -10,8 +10,8 @@ datasets:
   train:
     name: TrainSet
     type: Dataset_MultAbrr
-    dataroot_gt: ../shared/8844/train/gt
-    dataroot_lq: ../shared/8844/train/abrr
+    dataroot_gt: shared/4422/train/gt
+    dataroot_lq: shared/4422/train/abrr
     geometric_augs: true
 
     filename_tmpl: '{}'
@@ -27,8 +27,8 @@ datasets:
     ### -------------Progressive training--------------------------
     mini_batch_sizes: [8,5,4,2,1,1]             # Batch size per gpu   
     iters: [92000,64000,48000,36000,36000,24000]
-    gt_size: 384   # Max patch size for progressive training
-    gt_sizes: [128,160,192,256,320,384]  # Patch sizes for progressive training.
+    gt_size: 348   # Max patch size for progressive training
+    gt_sizes: [128,160,192,256,320,344]  # Patch sizes for progressive training.
     ### ------------------------------------------------------------
 
     ### ------- Training on single fixed-patch size 128x128---------
@@ -42,11 +42,19 @@ datasets:
     prefetch_mode: ~
 
     # params for Dataset_MultAbrr
+    ds_type: AberratedDataset
+    dataset_path: shared/4422 #dataset_path = Path(r"D:\MINST28x28")
+    gt_path: gt
+    abrr_path: abrr
+    abrr_inputs: 10
     dtype: float32
+    train_test_split_ratio: ~
     input_channels: 1
-    max_length: 5000
+    maxlen: 4950
+    resize_to: ~
+    crop_to: 592
     abrr_imgs_number: 10
-    dataset_mode: fixed
+    dset_mode: fixed
     gt_size: 384
     geometric_augs: true
 
@@ -54,19 +62,28 @@ datasets:
   val:
     name: ValSet
     type: Dataset_MultAbrr
-    dataroot_gt: ../shared/8844/test/gt
-    dataroot_lq: ../shared/8844/test/abrr
+    dataroot_gt: shared/4422/test/gt
+    dataroot_lq: shared/4422/test/abrr
     io_backend:
       type: disk
-    
+
     # params for Dataset_MultAbrr
+    ds_type: AberratedDataset
+    dataset_path: shared/4422 #dataset_path = Path(r"D:\MINST28x28")
+    gt_path: gt
+    abrr_path: abrr
+    abrr_inputs: 10
     dtype: float32
+    train_test_split_ratio: ~
     input_channels: 1
-    max_length: 5000
+    maxlen: 4950
+    resize_to: ~
+    crop_to: 592
     abrr_imgs_number: 10
-    dataset_mode: fixed
-    gt_size: 600
-    geometric_augs: false
+    dset_mode: fixed
+    gt_size: 592
+    geometric_augs: true
+
 
 # network structures
 network_g:
@@ -87,7 +104,7 @@ network_g:
 path:
   pretrain_network_g: ~
   strict_load_g: true
-  resume_state: experiments/8844_worker1/training_states/52000.state
+  resume_state: restormer/experiments/4422_AUGabrrs/training_states/300000.state
 
 # training settings
 train:
@@ -135,7 +152,7 @@ val:
       type: calculate_psnr
       crop_border: 0
       test_y_channel: false
-    
+
     l1loss: # metric name, can be arbitrary
       type: l1loss
       crop_border: 0
@@ -147,7 +164,7 @@ val:
       test_y_channel: false
 # logging settings
 logger:
-  print_freq: 1000
+  print_freq: !!float 1e3
   save_checkpoint_freq: !!float 4e3
   use_tb_logger: true
   wandb:

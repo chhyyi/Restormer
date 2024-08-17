@@ -1,5 +1,5 @@
 # general settings
-name: 4422_AUGabrrs
+name: 4422_AUGabrrs_SC
 model_type: ImageCleanModel
 scale: 1
 num_gpu: 1  # set num_gpu: 0 for cpu mode
@@ -9,7 +9,7 @@ manual_seed: 100
 datasets:
   train:
     name: TrainSet
-    type: Dataset_MultAbrr
+    type: Dataset_MultAbrr_SC
     dataroot_gt: shared/4422/train/gt
     dataroot_lq: shared/4422/train/abrr
     geometric_augs: true
@@ -42,7 +42,7 @@ datasets:
     prefetch_mode: ~
 
     # params for Dataset_MultAbrr
-    ds_type: AberratedDataset
+    ds_type: ShiftCorrectedAbrrDataset
     dataset_path: shared/4422 #dataset_path = Path(r"D:\MINST28x28")
     gt_path: gt
     abrr_path: abrr
@@ -61,14 +61,14 @@ datasets:
 
   val:
     name: ValSet
-    type: Dataset_MultAbrr
+    type: Dataset_MultAbrr_SC
     dataroot_gt: shared/4422/test/gt
     dataroot_lq: shared/4422/test/abrr
     io_backend:
       type: disk
 
     # params for Dataset_MultAbrr
-    ds_type: AberratedDataset
+    ds_type: ShiftCorrectedAbrrDataset
     dataset_path: shared/4422 #dataset_path = Path(r"D:\MINST28x28")
     gt_path: gt
     abrr_path: abrr
@@ -81,7 +81,7 @@ datasets:
     crop_to: 592
     abrr_imgs_number: 10
     dset_mode: fixed
-    gt_size: 384
+    gt_size: 592
     geometric_augs: true
 
 
@@ -104,7 +104,7 @@ network_g:
 path:
   pretrain_network_g: ~
   strict_load_g: true
-  resume_state: ~
+  resume_state: restormer/experiments/4422_AUGabrrs_SC/training_states/300000.state
 
 # training settings
 train:
@@ -142,8 +142,8 @@ train:
 val:
   window_size: 8
   val_freq: !!float 4e3
-  save_img: false
-  rgb2bgr: true
+  save_img: true
+  rgb2bgr: false
   use_image: false
   max_minibatch: 8
 
@@ -153,6 +153,15 @@ val:
       crop_border: 0
       test_y_channel: false
 
+    l1loss: # metric name, can be arbitrary
+      type: l1loss
+      crop_border: 0
+      test_y_channel: false
+
+    mse:
+      type: l2loss
+      crop_border: 0
+      test_y_channel: false
 # logging settings
 logger:
   print_freq: !!float 1e3
