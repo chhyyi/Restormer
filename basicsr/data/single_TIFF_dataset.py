@@ -34,19 +34,24 @@ class Dataset_SingleStackedTIFF(data.Dataset):
     HW's mpmnueral data provided on 2024 AUG 02. It comes with pairs of gt (tif) file and 100-stacked tiff measured with random modulation.
     It will just return 100 pairs of (1 stack, gt), to get ensemble average later on 'basicsr/test_stack.py'
     """
-    def __init__(self, abrr_tiff, gt_tif, input_stack_num=100, input_stack_range=(1,101), dtype=torch.float32):
+    def __init__(self, opt):
         super().__init__()
-        self.abrr_tiff = abrr_tiff
-        self.gt_tif = gt_tif
-        self.input_stack_num = input_stack_num
-        self.observations = torch.tensor(tifffile.imread(abrr_tiff),dtype=dtype)[input_stack_range[0]:input_stack_range[1]]
-        self.gt = torch.tensor(tifffile.imread(gt_tif, key=0), dtype=dtype)
+        self.opt = opt
+
+        self.abrr_tiff = Path(opt['abrr_path'])
+        self.gt_tif = Path(opt['gt_path'])
+        self.input_stack_num = opt['abrr_inputs']
+        self.input_stack_range = (opt['observe_start_stack_idx'], opt['observe_start_stack_idx']+self.input_stack_num)
+        self.dtype = torch.float32 if opt['dtype_readas']=="float32" else NotImplementedError
+        self.to_range = 257.0 if opt['dtype']=="uint16" else NotImplementedError #65535/255 = 257
+        self.observations = LinNorm()((torch.tensor(tifffile.imread(self.abrr_tiff).astype(np.float32),dtype=self.dtype)[self.input_stack_range[0]:self.input_stack_range[0]+self.input_stack_range[1]]))*(195./255.)+(30./255.)
+        self.gt = LinNorm()((torch.tensor(tifffile.imread(self.gt_tif, key=0).astype((np.float32)), dtype=self.dtype)))*(195./255.)+(30./255.)
     def __len__(self):
         return self.input_stack_num
     def __getitem__(self, idx):
         img_lq = self.observations[idx][None,...]
-        img_gt = self.gt_tif[None,...]
-        return {'lq': img_lq, 'gt': img_gt, 'lq_path': f"{self.abrr_tiff}@stack{idx}", 'gt_path': self.gt_tif}
+        img_gt = self.gt[None,...]
+        return {'lq': img_lq, 'gt': img_gt, 'lq_path': f"{self.abrr_tiff.parent.joinpath(self.abrr_tiff.stem)}stack{idx}.tiff", 'gt_path': f"stack{idx}_{self.gt_tif}"} # note that these paths are not existing files!
 
 
         

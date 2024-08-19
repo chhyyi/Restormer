@@ -1,5 +1,5 @@
 # general settings
-name: 4422_AUGabrrs
+name: 4422_AUGabrrs_LinNorm_0.5centered
 model_type: ImageCleanModel
 scale: 1
 num_gpu: 1  # set num_gpu: 0 for cpu mode

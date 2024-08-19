@@ -237,9 +237,9 @@ class ImageCleanModel(BaseModel):
             test()
 
             visuals = self.get_current_visuals()
-            sr_img = tensor2img([visuals['result']], rgb2bgr=rgb2bgr)
+            sr_img = tensor2img([(visuals['result']-visuals['result'].min())/(visuals['result'].max()-visuals['result'].min())], rgb2bgr=rgb2bgr)
             if 'gt' in visuals:
-                gt_img = tensor2img([visuals['gt']], rgb2bgr=rgb2bgr)
+                gt_img = tensor2img([(visuals['gt']-visuals['gt'].min())/(visuals['gt'].max()-visuals['gt'].min())], rgb2bgr=rgb2bgr)
                 del self.gt
 
             # tentative for out of GPU memory

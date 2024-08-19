@@ -1,5 +1,5 @@
 # general settings
-name: 4422_AUGabrrs
+name: 4422_AUGabrrs_LinNorm_0centered
 model_type: ImageCleanModel
 scale: 1
 num_gpu: 1  # set num_gpu: 0 for cpu mode
@@ -104,7 +104,7 @@ network_g:
 path:
   pretrain_network_g: ~
   strict_load_g: true
-  resume_state: restormer/experiments/4422_AUGabrrs/training_states/300000.state
+  resume_state: restormer/experiments/4422_AUGabrrs_LinNorm_0centered/training_states/300000.state
 
 # training settings
 train:

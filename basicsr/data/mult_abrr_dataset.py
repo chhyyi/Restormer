@@ -24,6 +24,18 @@ class LinNorm(torch.nn.Module):
         super().__init__()
     def forward(self, tensor):
         return (tensor-tensor.min())/(tensor.max()-tensor.min())
+    
+
+class Norm_center_2(torch.nn.Module):
+    """
+    assume tensor range [0,1], perform (tensor-mean)/std,
+    move it to [0,1] range again....
+    """
+    def __init__(self):
+        super().__init__()
+    def forward(self, tensor):
+        return transforms.Normalize(torch.mean(tensor),torch.std(tensor))(tensor)/2.0+0.5
+
 
 
 class Dataset_MultAbrr_SC(ShiftCorrectedAbrrDataset):
@@ -48,7 +60,8 @@ class Dataset_MultAbrr_SC(ShiftCorrectedAbrrDataset):
         ds_kwargs = {i:opt[i] for i in kwargs_to_dataset_list}
         ds_kwargs["input_channels"] = opt["input_channels"]
         transform_dataset = [transforms.ToTensor(),
-                             transforms.ConvertImageDtype(self.dtype),] # set scale false, while aberrated inputs are float16.. [0.0, 255.0]
+                             transforms.ConvertImageDtype(self.dtype),
+                             Norm_center_2()] # set scale false, while aberrated inputs are float16.. [0.0, 255.0]
         
         resize_to = opt['resize_to']
         crop_to = opt['crop_to']
@@ -117,7 +130,8 @@ class Dataset_MultAbrr(AberratedDataset):
         ds_kwargs = {i:opt[i] for i in kwargs_to_dataset_list}
         ds_kwargs["input_channels"] = opt["input_channels"]
         transform_dataset = [transforms.ToTensor(),
-                             transforms.ConvertImageDtype(self.dtype),] # set scale false, while aberrated inputs are float16.. [0.0, 255.0]
+                             transforms.ConvertImageDtype(self.dtype),
+                             Norm_center_2()] # set scale false, while aberrated inputs are float16.. [0.0, 255.0]
         
         resize_to = opt['resize_to']
         crop_to = opt['crop_to']
