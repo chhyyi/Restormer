@@ -18,6 +18,8 @@ import numpy as np
 import cv2
 import torch.nn.functional as F
 from functools import partial
+import tifffile
+from pathlib import Path
 
 class Mixing_Augment:
     def __init__(self, mixup_beta, use_identity, device):
@@ -237,9 +239,9 @@ class ImageCleanModel(BaseModel):
             test()
 
             visuals = self.get_current_visuals()
-            sr_img = tensor2img([(visuals['result']-visuals['result'].min())/(visuals['result'].max()-visuals['result'].min())], rgb2bgr=rgb2bgr)
+            sr_img = visuals['result'].squeeze().numpy() #tensor2img([(visuals['result']-visuals['result'].min())/(visuals['result'].max()-visuals['result'].min())], rgb2bgr=rgb2bgr)
             if 'gt' in visuals:
-                gt_img = tensor2img([(visuals['gt']-visuals['gt'].min())/(visuals['gt'].max()-visuals['gt'].min())], rgb2bgr=rgb2bgr)
+                gt_img = visuals['gt'].squeeze().numpy() #tensor2img([(visuals['gt']-visuals['gt'].min())/(visuals['gt'].max()-visuals['gt'].min())], rgb2bgr=rgb2bgr)
                 del self.gt
 
             # tentative for out of GPU memory
@@ -253,22 +255,26 @@ class ImageCleanModel(BaseModel):
                     
                     save_img_path = osp.join(self.opt['path']['visualization'],
                                              img_name,
-                                             f'{img_name}_{current_iter}.png')
+                                             f'{img_name}_{current_iter}.tif')
                     
                     save_gt_img_path = osp.join(self.opt['path']['visualization'],
                                              img_name,
-                                             f'{img_name}_{current_iter}_gt.png')
+                                             f'{img_name}_{current_iter}_gt.tif')
                 else:
                     
                     save_img_path = osp.join(
                         self.opt['path']['visualization'], dataset_name,
-                        f'{img_name}.png')
+                        f'{img_name}.tif')
                     save_gt_img_path = osp.join(
                         self.opt['path']['visualization'], dataset_name,
-                        f'{img_name}_gt.png')
+                        f'{img_name}_gt.tif')
                     
-                imwrite(sr_img, save_img_path)
-                imwrite(gt_img, save_gt_img_path)
+                save_dtype = np.float32 if self.opt['datasets']['val']['dtype_readas']=='float32' else NotImplementedError
+                #imwrite(sr_img, save_img_path)
+                Path(save_img_path).parent.mkdir(exist_ok=True, parents=True)
+                tifffile.imwrite(save_img_path, sr_img, dtype=save_dtype)
+                #imwrite(gt_img, save_gt_img_path)
+                tifffile.imwrite(save_gt_img_path, gt_img, dtype=save_dtype)
 
             if with_metrics:
                 # calculate metrics

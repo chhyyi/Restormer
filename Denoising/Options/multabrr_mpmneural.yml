@@ -1,5 +1,5 @@
 # general settings
-name: 4422_AUGabrrs_LinNorm_0.5centered
+name: 4422_AUGabrrs_LinNorm_dot5meanstd
 model_type: ImageCleanModel
 scale: 1
 num_gpu: 1  # set num_gpu: 0 for cpu mode
@@ -57,6 +57,10 @@ datasets:
     dset_mode: fixed
     gt_size: 384
     geometric_augs: true
+    normalize: LinNorm_0.5mean0.5std
+    mean: 40.74460220336914
+    std: 28.084075927734375
+    
 
 
   val:
@@ -83,7 +87,9 @@ datasets:
     dset_mode: fixed
     gt_size: 384
     geometric_augs: true
-
+    normalize: LinNorm_0.5mean0.5std
+    mean: 40.74460220336914
+    std: 28.084075927734375
 
 # network structures
 network_g:

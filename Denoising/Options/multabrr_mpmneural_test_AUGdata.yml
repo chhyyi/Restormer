@@ -1,5 +1,5 @@
 # general settings
-name: 4422_AUGabrrs
+name: 4422_AUGabrrs_LinNorm_dot5meanstd
 model_type: ImageCleanModel
 scale: 1
 num_gpu: 1  # set num_gpu: 0 for cpu mode
@@ -12,7 +12,7 @@ datasets:
     type: Dataset_MultAbrr
     dataroot_gt: shared/4422/train/gt
     dataroot_lq: shared/4422/train/abrr
-    geometric_augs: true
+    geometric_augs: false
 
     filename_tmpl: '{}'
     io_backend:
@@ -56,7 +56,12 @@ datasets:
     abrr_imgs_number: 10
     dset_mode: fixed
     gt_size: 384
-    geometric_augs: true
+    geometric_augs: false
+    normalize: LinNorm_0.5mean0.5std_inoutsep
+    mean_gt: 2064.4952545166016
+    std_gt: 533.9668319134453
+    mean_input: 2285.8155072021486
+    std_input: 276.6765964911083
 
 
   val:
@@ -78,7 +83,12 @@ datasets:
     dtype_readas: float32
     input_channels: 1
     gt_size: 256
-    geometric_augs: true
+    geometric_augs: false
+    normalize: LinNorm_0.5mean0.5std_inoutsep
+    mean_gt: 2064.4952545166016
+    std_gt: 533.9668319134453
+    mean_input: 2285.8155072021486
+    std_input: 276.6765964911083
 
 
 
@@ -101,7 +111,7 @@ network_g:
 path:
   pretrain_network_g: ~
   strict_load_g: true
-  resume_state: restormer/experiments/4422_AUGabrrs/training_states/300000.state
+  resume_state: restormer/experiments/4422_AUGabrrs_LinNorm_dot5meanstd/training_states/300000.state
 
 # training settings
 train:
@@ -119,7 +129,7 @@ train:
     eta_mins: [0.0003,0.000001]   
   
   mixing_augs:
-    mixup: true
+    mixup: false
     mixup_beta: 1.2
     use_identity: true
 

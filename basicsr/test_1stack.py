@@ -6,11 +6,7 @@ It does not load the model but 'states'! might be not efficient
 
 """
 
-import argparse
-import datetime
-import logging
-import math
-import random
+
 import time
 import torch
 from os import path as osp
@@ -162,14 +158,14 @@ def save_vis_comparison(exp_path=None, num_iter = 300000, output_pth = "HW_AUGda
     vis_dirs = [i for i in pth.glob("**/visualization")]
     for vis_dir in vis_dirs: # 1 visualization dirs per 1 experiment...
         for per_patch in vis_dir.iterdir():
-            last_pth = per_patch.joinpath(f"{per_patch.stem}_{num_iter}.png")
+            last_pth = per_patch.joinpath(f"{per_patch.stem}_{num_iter}.tif")
             if not last_pth.is_file():            
                 last_idx = 300000
                 raise FileNotFoundError(f"per_patc")
-            last = plt.imread(last_pth)
+            last = tif.imread(last_pth)
             preds.append(torch.tensor(last))
-            gt_pth = per_patch.joinpath(f"{last_pth.stem}_gt.png")
-            gt = plt.imread(gt_pth)
+            gt_pth = per_patch.joinpath(f"{last_pth.stem}_gt.tif")
+            gt = tif.imread(gt_pth)
 
             f, axs = plt.subplots(ncols = 2, nrows = 1, figsize=(15, 8.5))
             f.subplots_adjust(left=0.05)
@@ -215,6 +211,7 @@ def save_vis_comparison(exp_path=None, num_iter = 300000, output_pth = "HW_AUGda
     axs[1].axis("off")
     axs[1].set_title("GT")
     plt.savefig(output_pth.joinpath(f"ensemble_average.png"))
+    tif.imwrite(output_pth.joinpath(f"ensemble_average.tif"), ensemble_avg.numpy(), dtype=np.float32)
     plt.close()
 
     print(f"mse over whole validation set:{torch.mean(torch.tensor(mse_list))}")
