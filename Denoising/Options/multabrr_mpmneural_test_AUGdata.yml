@@ -58,10 +58,10 @@ datasets:
     gt_size: 384
     geometric_augs: false
     normalize: LinNorm_0.5mean0.5std_inoutsep
-    mean_gt: 2064.4952545166016
-    std_gt: 533.9668319134453
-    mean_input: 2285.8155072021486
-    std_input: 276.6765964911083
+    mean_gt: 40.74460220336914
+    std_gt: 28.084075927734375
+    mean_input: 40.75
+    std_input: 21.46875
 
 
   val:
