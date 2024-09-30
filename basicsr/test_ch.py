@@ -275,6 +275,8 @@ def save_vis_comparison(exp_path=None, num_iter = 300000, output_pth = "vis_outp
     glob prediction results(default: *_300000.png) on the experiments dir, save figure with gt, raw_input. linearly normalized (min-max).
     """
     opt = parse_options(is_train=True)
+    logger, tb_logger = init_loggers(opt)
+
     exp_path = Path(opt['path']['resume_state']).parent.parent
     pth = Path(exp_path)
 
@@ -283,17 +285,20 @@ def save_vis_comparison(exp_path=None, num_iter = 300000, output_pth = "vis_outp
     output_pth.mkdir(exist_ok=True)
 
     mse_list = []
+    raw_mse_list = []
 
     vis_dirs = [i for i in pth.glob("**/visualization")]
     for vis_dir in vis_dirs: # 1 visualization dirs per 1 experiment...
         for per_patch in vis_dir.iterdir():
-            last_pth = per_patch.joinpath(f"{per_patch.stem}_{num_iter}.png")
+            last_pth = per_patch.joinpath(f"{per_patch.stem}_{num_iter}.tif")
             if not last_pth.is_file():            
                 last_idx = 300000
                 raise FileNotFoundError(f"per_patc")
-            last = plt.imread(last_pth)
-            gt_pth = per_patch.joinpath(f"{last_pth.stem}_gt.png")
-            gt = plt.imread(gt_pth)
+            last0 = tif.imread(last_pth)
+            last = (last0-last0.min())/(last0.max()-last0.min())
+            gt_pth = per_patch.joinpath(f"{last_pth.stem}_gt.tif")
+            gt0 = tif.imread(gt_pth)
+            gt = (gt0-gt0.min())/(gt0.max()-gt0.min())
             linnorm_input_pth = per_patch.joinpath(f"{per_patch.stem}_linnorm_input.png")
             linnorm_input = plt.imread(linnorm_input_pth)
             raw_input_pth = per_patch.joinpath(f"{per_patch.stem}_raw_input.png")
@@ -318,6 +323,8 @@ def save_vis_comparison(exp_path=None, num_iter = 300000, output_pth = "vis_outp
 
             mse = torch.mean((torch.Tensor(gt) -torch.Tensor(last))**2)
             mse_list.append(mse)
+            raw_mse = torch.mean((torch.Tensor(gt0) -torch.Tensor(last0))**2)
+            raw_mse_list.append(raw_mse)
             axs[2].axis("off")
             axs[2].set_title(f"prediction, mse:{mse:.06}")
             im = axs[3].imshow(gt, cmap="cividis", vmin=0, vmax=1)
@@ -328,9 +335,10 @@ def save_vis_comparison(exp_path=None, num_iter = 300000, output_pth = "vis_outp
             plt.savefig(output_pth.joinpath(f"{vis_dir.parent.stem}_{per_patch.stem}.png"))
             plt.close()
 
-    print(f"mse over whole validation set:{torch.mean(torch.tensor(mse_list))}")
+    print(f"mse over whole validation set:{torch.mean(torch.tensor(mse_list))} (raw scale: {torch.mean(torch.tensor(raw_mse_list))})")
+    logger.info(f"mse over whole validation set:{torch.mean(torch.tensor(mse_list))} (raw scale: {torch.mean(torch.tensor(raw_mse_list))})")
 
 if __name__ == '__main__':
-    main()
-    copy_input_abrr2vis()
+    #main()
+    #copy_input_abrr2vis()
     save_vis_comparison(exp_path="/root/project/restormer/experiments", num_iter = 300000,output_pth = "vis_outputs")

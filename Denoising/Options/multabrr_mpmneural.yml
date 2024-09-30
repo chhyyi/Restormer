@@ -1,5 +1,5 @@
 # general settings
-name: 4422_AUGabrrs_LinNorm_dot5meanstd
+name: sb0902_LinNorm_mean0.5std0.5
 model_type: ImageCleanModel
 scale: 1
 num_gpu: 1  # set num_gpu: 0 for cpu mode
@@ -10,8 +10,8 @@ datasets:
   train:
     name: TrainSet
     type: Dataset_MultAbrr
-    dataroot_gt: shared/4422/train/gt
-    dataroot_lq: shared/4422/train/abrr
+    dataroot_gt: shared/sb0902/train/gt
+    dataroot_lq: shared/sb0902/train/abrr
     geometric_augs: true
 
     filename_tmpl: '{}'
@@ -43,7 +43,7 @@ datasets:
 
     # params for Dataset_MultAbrr
     ds_type: AberratedDataset
-    dataset_path: shared/4422 #dataset_path = Path(r"D:\MINST28x28")
+    dataset_path: shared/sb0902 #dataset_path = Path(r"D:\MINST28x28")
     gt_path: gt
     abrr_path: abrr
     abrr_inputs: 10
@@ -57,23 +57,25 @@ datasets:
     dset_mode: fixed
     gt_size: 384
     geometric_augs: true
-    normalize: LinNorm_0.5mean0.5std
-    mean: 40.74460220336914
-    std: 28.084075927734375
-    
+    normalize: LinNorm_0.5mean0.5std_inoutsep
+    mean_gt: 35153.57765919851
+    std_gt: 4640.667693526714
+    mean_input: 35153.577658747476
+    std_input: 3855.4546153602205
+
 
 
   val:
     name: ValSet
     type: Dataset_MultAbrr
-    dataroot_gt: shared/4422/test/gt
-    dataroot_lq: shared/4422/test/abrr
+    dataroot_gt: shared/sb0902/test/gt
+    dataroot_lq: shared/sb0902/test/abrr
     io_backend:
       type: disk
 
     # params for Dataset_MultAbrr
     ds_type: AberratedDataset
-    dataset_path: shared/4422 #dataset_path = Path(r"D:\MINST28x28")
+    dataset_path: shared/sb0902 #dataset_path = Path(r"D:\MINST28x28")
     gt_path: gt
     abrr_path: abrr
     abrr_inputs: 10
@@ -87,9 +89,11 @@ datasets:
     dset_mode: fixed
     gt_size: 384
     geometric_augs: true
-    normalize: LinNorm_0.5mean0.5std
-    mean: 40.74460220336914
-    std: 28.084075927734375
+    normalize: LinNorm_0.5mean0.5std_inoutsep
+    mean_gt: 35153.57765919851
+    std_gt: 4640.667693526714
+    mean_input: 35153.577658747476
+    std_input: 3855.4546153602205
 
 # network structures
 network_g:
