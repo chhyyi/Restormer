@@ -15,6 +15,7 @@ experiments/
 nohup.out
 tb_logger/
 results/
+**/.vscode
 
 
 # Byte-compiled / optimized / DLL files

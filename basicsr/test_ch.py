@@ -16,8 +16,8 @@ import torch
 from os import path as osp
 
 
-import sys
-sys.path.append("/root/project/restormer")
+#import sys
+#sys.path.append("/root/project/restormer")
 
 from basicsr.data import create_dataloader, create_dataset
 from basicsr.data.data_sampler import EnlargedSampler
@@ -34,112 +34,7 @@ import numpy as np
 from pathlib import Path
 import matplotlib.pyplot as plt
 import tifffile as tif
-
-def parse_options(is_train=True):
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '-opt', type=str, required=True, help='Path to option YAML file.')
-    parser.add_argument(
-        '--launcher',
-        choices=['none', 'pytorch', 'slurm'],
-        default='none',
-        help='job launcher')
-    parser.add_argument('--local_rank', type=int, default=0)
-    args = parser.parse_args()
-    opt = parse(args.opt, is_train=is_train)
-
-    # distributed settings
-    if args.launcher == 'none':
-        opt['dist'] = False
-        print('Disable distributed.', flush=True)
-    else:
-        opt['dist'] = True
-        if args.launcher == 'slurm' and 'dist_params' in opt:
-            init_dist(args.launcher, **opt['dist_params'])
-        else:
-            init_dist(args.launcher)
-            print('init dist .. ', args.launcher)
-
-    opt['rank'], opt['world_size'] = get_dist_info()
-
-    # random seed
-    seed = opt.get('manual_seed')
-    if seed is None:
-        seed = random.randint(1, 10000)
-        opt['manual_seed'] = seed
-    set_random_seed(seed + opt['rank'])
-
-    return opt
-
-
-def init_loggers(opt):
-    log_file = osp.join(opt['path']['log'],
-                        f"train_{opt['name']}_{get_time_str()}.log")
-    logger = get_root_logger(
-        logger_name='basicsr', log_level=logging.INFO, log_file=log_file)
-    logger.info(get_env_info())
-    logger.info(dict2str(opt))
-
-    # initialize wandb logger before tensorboard logger to allow proper sync:
-    if (opt['logger'].get('wandb')
-            is not None) and (opt['logger']['wandb'].get('project')
-                              is not None) and ('debug' not in opt['name']):
-        assert opt['logger'].get('use_tb_logger') is True, (
-            'should turn on tensorboard when using wandb')
-        init_wandb_logger(opt)
-    tb_logger = None
-    if opt['logger'].get('use_tb_logger') and 'debug' not in opt['name']:
-        tb_logger = init_tb_logger(log_dir=osp.join('tb_logger', opt['name']))
-    return logger, tb_logger
-
-
-def create_train_val_dataloader(opt, logger):
-    # create train and val dataloaders
-    train_loader, val_loader = None, None
-    for phase, dataset_opt in opt['datasets'].items():
-        if phase == 'train':
-            dataset_enlarge_ratio = dataset_opt.get('dataset_enlarge_ratio', 1)
-            train_set = create_dataset(dataset_opt)
-            train_sampler = EnlargedSampler(train_set, opt['world_size'],
-                                            opt['rank'], dataset_enlarge_ratio)
-            train_loader = create_dataloader(
-                train_set,
-                dataset_opt,
-                num_gpu=opt['num_gpu'],
-                dist=opt['dist'],
-                sampler=train_sampler,
-                seed=opt['manual_seed'])
-
-            num_iter_per_epoch = math.ceil(
-                len(train_set) * dataset_enlarge_ratio /
-                (dataset_opt['batch_size_per_gpu'] * opt['world_size']))
-            total_iters = int(opt['train']['total_iter'])
-            total_epochs = math.ceil(total_iters / (num_iter_per_epoch))
-            logger.info(
-                'Training statistics:'
-                f'\n\tNumber of train images: {len(train_set)}'
-                f'\n\tDataset enlarge ratio: {dataset_enlarge_ratio}'
-                f'\n\tBatch size per gpu: {dataset_opt["batch_size_per_gpu"]}'
-                f'\n\tWorld size (gpu number): {opt["world_size"]}'
-                f'\n\tRequire iter number per epoch: {num_iter_per_epoch}'
-                f'\n\tTotal epochs: {total_epochs}; iters: {total_iters}.')
-
-        elif phase == 'val':
-            val_set = create_dataset(dataset_opt)
-            val_loader = create_dataloader(
-                val_set,
-                dataset_opt,
-                num_gpu=opt['num_gpu'],
-                dist=opt['dist'],
-                sampler=None,
-                seed=opt['manual_seed'])
-            logger.info(
-                f'Number of val images/folders in {dataset_opt["name"]}: '
-                f'{len(val_set)}')
-        else:
-            raise ValueError(f'Dataset phase {phase} is not recognized.')
-
-    return train_loader, train_sampler, val_loader, total_epochs, total_iters
+from train import parse_options, init_loggers, create_train_val_dataloader
 
 def copy_input_abrr2vis():
     """move input abrr imgs to visualizations directory"""

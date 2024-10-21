@@ -1,21 +1,17 @@
 # general settings
-name: GaussianGrayDenoising_RestormerSigma15
+name: abrrdset_3dPSF_test
 model_type: ImageCleanModel
 scale: 1
-num_gpu: 8  # set num_gpu: 0 for cpu mode
+num_gpu: 1  # set num_gpu: 0 for cpu mode
 manual_seed: 100
 
 # dataset and data loader settings
 datasets:
   train:
     name: TrainSet
-    type: Dataset_GaussianDenoising
-    sigma_type: constant
-    sigma_range: 15
-    in_ch: 1    ## Grayscale image
-    dataroot_gt: ./Denoising/Datasets/train/DFWB
-    dataroot_lq: none
-    geometric_augs: true
+    type: AbrrDataset2D_3dPSF
+    dataroot_gt: /root/project/shared/aoon_stack/
+    geometric_augs: false
 
     filename_tmpl: '{}'
     io_backend:
@@ -23,14 +19,14 @@ datasets:
 
     # data loader
     use_shuffle: true
-    num_worker_per_gpu: 8
-    batch_size_per_gpu: 8
+    num_worker_per_gpu: 1
+    batch_size_per_gpu: 1
 
     ### -------------Progressive training--------------------------
     mini_batch_sizes: [8,5,4,2,1,1]             # Batch size per gpu   
     iters: [92000,64000,48000,36000,36000,24000]
     gt_size: 384   # Max patch size for progressive training
-    gt_sizes: [128,160,192,256,320,384]  # Patch sizes for progressive training.
+    gt_sizes: [128,160,192,256,320,344]  # Patch sizes for progressive training.
     ### ------------------------------------------------------------
 
     ### ------- Training on single fixed-patch size 128x128---------
@@ -43,15 +39,40 @@ datasets:
     dataset_enlarge_ratio: 1
     prefetch_mode: ~
 
+    ### mean, std, train_test_split, AbrrDataset3D should be same on train and valid phase!! ###
+    mean: 35020.19822889061
+    std: 4527.891003799704
+    train_test_split: 0.6666666666667
+    
+    AbrrDataset3D:
+      stack_path: /root/project/shared/aoon_stack/
+      lateral_size: 600
+      axial_size: 11
+      psf_size: 600
+      stride_z: 3
+      axialc: 0.8
+      axialc_std: 0.1
+
   val:
     name: ValSet
-    type: Dataset_GaussianDenoising
-    sigma_test: 15
-    in_ch: 1    ## Grayscale image
-    dataroot_gt: ./Denoising/Datasets/test/BSD68
-    dataroot_lq: none
+    type: AbrrDataset2D_3dPSF
+    dataroot_gt: /root/project/shared/aoon_stack/
     io_backend:
       type: disk
+    
+    ### mean, std, train_test_split, AbrrDataset3D should be same on train and valid phase!! ###
+    mean: 35020.19822889061
+    std: 4527.891003799704
+    train_test_split: 0.6666666666667
+
+    AbrrDataset3D:
+      stack_path: /root/project/shared/aoon_stack/
+      lateral_size: 600
+      axial_size: 11
+      psf_size: 600
+      stride_z: 3
+      axialc: 0.8
+      axialc_std: 0.1
 
 # network structures
 network_g:
@@ -118,6 +139,16 @@ val:
   metrics:
     psnr: # metric name, can be arbitrary
       type: calculate_psnr
+      crop_border: 0
+      test_y_channel: false
+
+    l1loss: # metric name, can be arbitrary
+      type: l1loss
+      crop_border: 0
+      test_y_channel: false
+
+    mse:
+      type: l2loss
       crop_border: 0
       test_y_channel: false
 

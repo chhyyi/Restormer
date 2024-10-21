@@ -38,7 +38,7 @@ datasets:
     ### ------------------------------------------------------------
 
     dataset_enlarge_ratio: 1
-    prefetch_mode: ~
+    prefetch_mode: cuda
 
   val:
     name: ValSet

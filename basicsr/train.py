@@ -8,7 +8,7 @@ import torch
 from os import path as osp
 
 import sys
-sys.path.append("/root/project/restormer")
+sys.path.append("/root/project/")
 
 from basicsr.data import create_dataloader, create_dataset
 from basicsr.data.data_sampler import EnlargedSampler
