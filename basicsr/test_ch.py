@@ -16,8 +16,8 @@ import torch
 from os import path as osp
 
 
-#import sys
-#sys.path.append("/root/project/restormer")
+import sys
+sys.path.append("/root/project/")
 
 from basicsr.data import create_dataloader, create_dataset
 from basicsr.data.data_sampler import EnlargedSampler
@@ -236,4 +236,4 @@ def save_vis_comparison(exp_path=None, num_iter = 300000, output_pth = "vis_outp
 if __name__ == '__main__':
     #main()
     #copy_input_abrr2vis()
-    save_vis_comparison(exp_path="/root/project/restormer/experiments", num_iter = 300000,output_pth = "vis_outputs")
+    save_vis_comparison(exp_path="/root/project/restormer/experiments", num_iter = 296000,output_pth = "vis_outputs")

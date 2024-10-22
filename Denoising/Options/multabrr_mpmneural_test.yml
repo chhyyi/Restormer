@@ -40,6 +40,7 @@ datasets:
 
     dataset_enlarge_ratio: 1
     prefetch_mode: cuda
+    pin_memory: True
 
     # params for Dataset_MultAbrr
     ds_type: AberratedDataset
@@ -75,7 +76,7 @@ datasets:
     dataset_path: shared/mpmneuron_3dpsf #dataset_path = Path(r"D:\MINST28x28")
     gt_path: gt
     abrr_path: abrr
-    abrr_inputs: 10
+    abrr_inputs: 4
     dtype: float32
     dtype_readas: float32
     train_test_split_ratio: ~
@@ -83,7 +84,7 @@ datasets:
     maxlen: 4950
     resize_to: ~
     crop_to: 592
-    abrr_imgs_number: 10
+    abrr_imgs_number: 4
     dset_mode: fixed
     gt_size: 592
     geometric_augs: false
@@ -109,7 +110,7 @@ network_g:
 path:
   pretrain_network_g: ~
   strict_load_g: true
-  resume_state: restormer/experiments/sb0902_LinNorm_mean0.5std0.5/training_states/300000.state
+  resume_state: experiments/multabrr_3dpsf/training_states/296000.state
 
 # training settings
 train:

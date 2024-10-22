@@ -1,5 +1,5 @@
 # general settings
-name: multabrr_3dpsf
+name: multabrr_2dpsf_384
 model_type: ImageCleanModel
 scale: 1
 num_gpu: 1  # set num_gpu: 0 for cpu mode
@@ -10,8 +10,8 @@ datasets:
   train:
     name: TrainSet
     type: Dataset_MultAbrr
-    dataroot_gt: shared/mpmneuron_3dpsf/train/gt
-    dataroot_lq: shared/mpmneuron_3dpsf/train/abrr
+    dataroot_gt: shared/mpmneuron_2dpsf/train/gt
+    dataroot_lq: shared/mpmneuron_2dpsf/train/abrr
     geometric_augs: true
 
     filename_tmpl: '{}'
@@ -28,7 +28,7 @@ datasets:
     mini_batch_sizes: [8,5,4,2,1,1]             # Batch size per gpu   
     iters: [92000,64000,48000,36000,36000,24000]
     gt_size: 348   # Max patch size for progressive training
-    gt_sizes: [128,160,192,256,320,344]  # Patch sizes for progressive training.
+    gt_sizes: [128,160,192,256,320,384]  # Patch sizes for progressive training.
     ### ------------------------------------------------------------
 
     ### ------- Training on single fixed-patch size 128x128---------
@@ -44,7 +44,7 @@ datasets:
 
     # params for Dataset_MultAbrr
     ds_type: AberratedDataset
-    dataset_path: shared/mpmneuron_3dpsf #dataset_path = Path(r"D:\MINST28x28")
+    dataset_path: shared/mpmneuron_2dpsf #dataset_path = Path(r"D:\MINST28x28")
     gt_path: gt
     abrr_path: abrr
     abrr_inputs: 4
@@ -66,14 +66,14 @@ datasets:
   val:
     name: ValSet
     type: Dataset_MultAbrr
-    dataroot_gt: shared/mpmneuron_3dpsf/test/gt
-    dataroot_lq: shared/mpmneuron_3dpsf/test/abrr
+    dataroot_gt: shared/mpmneuron_2dpsf/test/gt
+    dataroot_lq: shared/mpmneuron_2dpsf/test/abrr
     io_backend:
       type: disk
 
     # params for Dataset_MultAbrr
     ds_type: AberratedDataset
-    dataset_path: shared/mpmneuron_3dpsf #dataset_path = Path(r"D:\MINST28x28")
+    dataset_path: shared/mpmneuron_2dpsf #dataset_path = Path(r"D:\MINST28x28")
     gt_path: gt
     abrr_path: abrr
     abrr_inputs: 4
