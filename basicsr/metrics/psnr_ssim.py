@@ -28,8 +28,8 @@ def calculate_psnr(img1,
         float: psnr result.
     """
 
-    assert img1.shape == img2.shape, (
-        f'Image shapes are differnet: {img1.shape}, {img2.shape}.')
+    #assert img1.shape == img2.shape, (
+    #    f'Image shapes are differnet: {img1.shape}, {img2.shape}.') # Not applicable for multichannel input..
     if input_order not in ['HWC', 'CHW']:
         raise ValueError(
             f'Wrong input_order {input_order}. Supported input_orders are '

@@ -28,7 +28,7 @@ class Dataset_MultAbrr(AberratedDataset):
         self.opt = opt
         self.gt_size = opt.get("gt_size")
         assert opt["dtype"]=="float32", "Not Implemented"
-        assert opt['input_channels']==1, "Not Implemented"
+        #assert opt['input_channels']==1, "Not Implemented"
         self.dtype = torch.float32 if opt["dtype"]=="float32" else NotImplementedError
 
         gt_pth = Path(opt["dataroot_gt"])

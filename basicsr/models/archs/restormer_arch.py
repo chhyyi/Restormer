@@ -283,3 +283,21 @@ class Restormer(nn.Module):
 
         return out_dec_level1
 
+
+class Restormer_Multichannel(Restormer):
+    def __init__(self, 
+        inp_channels=3, 
+        out_channels=3, 
+        dim = 48,
+        num_blocks = [4,6,6,8], 
+        num_refinement_blocks = 4,
+        heads = [1,2,4,8],
+        ffn_expansion_factor = 2.66,
+        bias = False,
+        LayerNorm_type = 'WithBias',   ## Other option 'BiasFree'
+        dual_pixel_task = False        ## True for dual-pixel defocus deblurring only. Also set inp_channels=6
+    ):
+        super().__init__(inp_channels, out_channels, dim, num_blocks, num_refinement_blocks, heads, ffn_expansion_factor, bias, LayerNorm_type, dual_pixel_task)
+
+    def forward(self, inp_img):
+        return super().forward(inp_img)[:,0,None,:,:]

@@ -1,3 +1,4 @@
+#%%
 """
 examine dataset, get some statistics
 originally from [aberration_sbcho/tree/chyi](https://github.com/chhyyi/aberration_sbcho/blob/ca331d3b291482762a69d5134d2099ed9bb7c7d6/util_abrr/dset_stat.py)
@@ -7,10 +8,10 @@ import tifffile
 import numpy as np
 from pathlib import Path
 
-dset_root = Path("/root/project/shared/sb0902")
+dset_root = Path("/root/project/shared/mpmneuron_3dpsf_1v10_incDefocus")
 sub_dir_list=[
-    "test/abrr",
-    "train/abrr"
+    "test/gt",
+    "train/gt"
 ]
 dir_lists = [Path(dset_root).joinpath(dir) for dir in sub_dir_list]
 

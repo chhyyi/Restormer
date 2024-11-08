@@ -1,5 +1,5 @@
 # general settings
-name: multabrr_2dpsf_384
+name: multabrr_2dpsf
 model_type: ImageCleanModel
 scale: 1
 num_gpu: 1  # set num_gpu: 0 for cpu mode
@@ -28,7 +28,7 @@ datasets:
     mini_batch_sizes: [8,5,4,2,1,1]             # Batch size per gpu   
     iters: [92000,64000,48000,36000,36000,24000]
     gt_size: 348   # Max patch size for progressive training
-    gt_sizes: [128,160,192,256,320,384]  # Patch sizes for progressive training.
+    gt_sizes: [128,160,192,256,320,344]  # Patch sizes for progressive training.
     ### ------------------------------------------------------------
 
     ### ------- Training on single fixed-patch size 128x128---------
@@ -58,8 +58,8 @@ datasets:
     dset_mode: fixed
     gt_size: 384
     geometric_augs: true
-    mean: 35020.19822889061
-    std: 4527.891003799704
+    mean: 35027.490257613914
+    std: 4520.298995873347
 
 
 
@@ -87,8 +87,8 @@ datasets:
     dset_mode: fixed
     gt_size: 384
     geometric_augs: true
-    mean: 35020.19822889061
-    std: 4527.891003799704
+    mean: 35027.490257613914
+    std: 4520.298995873347
 
 # network structures
 network_g:

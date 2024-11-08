@@ -234,6 +234,6 @@ def save_vis_comparison(exp_path=None, num_iter = 300000, output_pth = "vis_outp
     logger.info(f"mse over whole validation set:{torch.mean(torch.tensor(mse_list))} (raw scale: {torch.mean(torch.tensor(raw_mse_list))})")
 
 if __name__ == '__main__':
-    #main()
-    #copy_input_abrr2vis()
-    save_vis_comparison(exp_path="/root/project/restormer/experiments", num_iter = 296000,output_pth = "vis_outputs")
+    main()
+    copy_input_abrr2vis()
+    save_vis_comparison(exp_path="/root/project/restormer/experiments", num_iter = 300000,output_pth = "vis_outputs")

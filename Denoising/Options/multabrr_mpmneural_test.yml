@@ -1,5 +1,5 @@
 # general settings
-name: multabrr_3dpsf
+name: multabrr_2dpsf
 model_type: ImageCleanModel
 scale: 1
 num_gpu: 1  # set num_gpu: 0 for cpu mode
@@ -10,8 +10,8 @@ datasets:
   train:
     name: TrainSet
     type: Dataset_MultAbrr
-    dataroot_gt: shared/mpmneuron_3dpsf/train/gt
-    dataroot_lq: shared/mpmneuron_3dpsf/train/abrr
+    dataroot_gt: shared/mpmneuron_2dpsf/train/gt
+    dataroot_lq: shared/mpmneuron_2dpsf/train/abrr
     geometric_augs: false
 
     filename_tmpl: '{}'
@@ -44,7 +44,7 @@ datasets:
 
     # params for Dataset_MultAbrr
     ds_type: AberratedDataset
-    dataset_path: shared/mpmneuron_3dpsf
+    dataset_path: shared/mpmneuron_2dpsf
     gt_path: gt
     abrr_path: abrr
     abrr_inputs: 4
@@ -58,8 +58,8 @@ datasets:
     dset_mode: fixed
     gt_size: 384
     geometric_augs: false
-    mean: 35020.19822889061
-    std: 4527.891003799704
+    mean: 35027.490257613914
+    std: 4520.298995873347
 
 
 
@@ -88,8 +88,8 @@ datasets:
     dset_mode: fixed
     gt_size: 592
     geometric_augs: false
-    mean: 35020.19822889061
-    std: 4527.891003799704
+    mean: 35027.490257613914
+    std: 4520.298995873347
 
 # network structures
 network_g:
@@ -110,7 +110,7 @@ network_g:
 path:
   pretrain_network_g: ~
   strict_load_g: true
-  resume_state: experiments/multabrr_3dpsf/training_states/296000.state
+  resume_state: /root/project/experiments/multabrr_2dpsf/training_states/300000.state
 
 # training settings
 train:

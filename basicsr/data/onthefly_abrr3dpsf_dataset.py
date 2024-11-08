@@ -23,7 +23,7 @@ class AbrrDataset3D(torch.utils.data.Dataset):
     """
     From mpmneuron dataset by prof JH Park, load subvolume of aberrated <-> GT pair. The dataset is provided as 550 files for 550 stacks. each file is 2048x2048 16bit tif image.
     """
-    def __init__(self, stack_path=None, lateral_size=None, axial_size=None, psf_size=None, len_stack=550, section=9, section_size=600, stride_z = "overlap0", fused_size = 2048, axialc = 0.5, axialc_std = 0.5, device=torch.device("cuda")):
+    def __init__(self, stack_path=None, lateral_size=None, axial_size=None, psf_size=None, len_stack=550, section=9, section_size=600, stride_z = "overlap0", fused_size = 2048, axialc = 0.5, axialc_std = 0.5, abrr_modes = [3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], device=torch.device("cuda")):
         self.stack_tifs = [Path(stack_path).joinpath(f"AOon_Stack_{i}.tif") for i in range(1, 1+len_stack)]
         self.lateral_size = lateral_size
         self.axial_size = axial_size
@@ -43,13 +43,14 @@ class AbrrDataset3D(torch.utils.data.Dataset):
         self.section_stride = fused_size//self.section_rt
         self.axialc = axialc
         self.axialc_std = axialc_std
+        self.abrr_modes = abrr_modes
         self.device = device
     
     def __len__(self):
         return self.len_stack_per_section*self.section
     
     def RandAbrr(self, vol_gt, size_xy, axial_size, psf_size, axialc_mean=3.6264, axialc_std = 0.2,
-                 abrr_modes = [3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 
+                 abrr_modes = None, 
                  abrr_tot_amp=4.0, device=torch.device("cuda")):
         """
         for details, see test/synth_aberration.py 4. Exanole of 3d volume.
@@ -90,7 +91,7 @@ class AbrrDataset3D(torch.utils.data.Dataset):
             y0 = section_yidx*self.section_stride+randcrop_y0
             gt[:,:,i] = torch.from_numpy(tifffile.imread(self.stack_tifs[depth0+i])[x0:x0+self.lateral_size, y0:y0+self.lateral_size].astype(np.float64)).to(device = self.device)
 
-        abrr = self.RandAbrr(gt, self.lateral_size,self.axial_size, self.psf_size, axialc_mean=self.axialc, axialc_std=self.axialc_std, device=self.device)
+        abrr = self.RandAbrr(gt, self.lateral_size,self.axial_size, self.psf_size, axialc_mean=self.axialc, axialc_std=self.axialc_std, abrr_modes = self.abrr_modes, device=self.device)
         return {"gt":gt.moveaxis(2, 0)[None,...], "abrr":abrr.moveaxis(2, 0)[None,...], "pos0":[section_xidx, section_yidx, depth0]}
     
 # %%
