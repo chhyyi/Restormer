@@ -14,7 +14,7 @@
 
 # %%
 from basicsr.utils.options import parse # this function parse yaml file and process some options on parsed dictionary
-config = parse("Denoising/Options/synabrr_mpmneural_3dpsf_example.yml", is_train=True)
+config = parse("shared/mpmneuron_3dpsf_1v10_noDefocus/synabrr_mpmneural_3dpsf_example.yml", is_train=True)
 
 # for example, config['datasets']['train']['phase'] is a new option from parse function.
 print(config['datasets']['train']['phase'], config['datasets']['val']['phase'])
@@ -33,7 +33,7 @@ from pathlib import Path
 train_dataset = AbrrDataset2D_3dPSF_SaveDataset(config['datasets']['train'])
 val_dataset = AbrrDataset2D_3dPSF_SaveDataset(config['datasets']['val'])
 
-processed_dataset_root = Path("./shared/mpmneuron_3dpsf_1v10/")
+processed_dataset_root = Path("shared/mpmneuron_3dpsf_1v10_noDefocus")
 #%% Let's save these for old multiabrr dataset... (It was too slow to do on-the-fly)
 train_path = processed_dataset_root.joinpath("train")
 train_path.mkdir(parents=True, exist_ok=True)

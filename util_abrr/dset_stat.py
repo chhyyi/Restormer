@@ -8,7 +8,7 @@ import tifffile
 import numpy as np
 from pathlib import Path
 
-dset_root = Path("/root/project/shared/mpmneuron_3dpsf_1v10_incDefocus")
+dset_root = Path("/root/project/shared/mpmneuron_3dpsf_1v10_noDefocus")
 sub_dir_list=[
     "test/gt",
     "train/gt"

@@ -35,6 +35,8 @@ class Dataset_SingleStackedTIFF(data.Dataset):
         self.abrr_tiff = Path(opt['abrr_path'])
         self.gt_tif = Path(opt['gt_path'])
         self.input_stack_num = opt['abrr_inputs']
+        self.input_channels = opt['input_channels']
+        assert self.input_stack_num >= self.input_channels, NotImplementedError
         self.input_stack_range = (opt['observe_start_stack_idx'], opt['observe_start_stack_idx']+self.input_stack_num)
         self.dtype = torch.float32 if opt['dtype_readas']=="float32" else NotImplementedError
         self.transforms_gt = transforms.Compose([
@@ -48,14 +50,24 @@ class Dataset_SingleStackedTIFF(data.Dataset):
         self.observations = tifffile.imread(self.abrr_tiff).astype(np.float32)[self.input_stack_range[0]:self.input_stack_range[0]+self.input_stack_range[1]]
         self.gt = tifffile.imread(self.gt_tif, key=0).astype((np.float32))
 
-        self.mean_abrr = opt['mean_abrr']
-        self.std_abrr = opt['std_abrr']
-        self.mean_gt = opt['mean_gt']
-        self.std_gt = opt['std_gt']
+        self.mean = opt.get('mean')
+        self.std = opt.get('std')
+        self.mean_abrr = opt.get('mean_abrr')
+        self.std_abrr = opt.get('std_abrr')
+        self.mean_gt = opt.get('mean_gt')
+        self.std_gt = opt.get('std_gt')
+
+        if self.mean_abrr == None and self.std_abrr == None:
+            self.mean_abrr = self.mean
+            self.std_abrr = self.std
+        if self.mean_gt == None and self.std_gt == None:
+            self.mean_gt = self.mean
+            self.std_gt = self.std
+
     def __len__(self):
-        return self.input_stack_num
+        return self.input_stack_num - self.input_channels + 1
     def __getitem__(self, idx):
-        img_lq = self.transforms_input(self.observations[idx])
+        img_lq = torch.cat([self.transforms_input(self.observations[x]) for x in range(idx, idx+self.input_channels)])
         img_gt = self.transforms_gt(self.gt)
         
         normalize(img_lq, self.mean_abrr, self.std_abrr, inplace=True)
